@@ -30,7 +30,7 @@ const ItemSchema = mongoose.Schema({
         },
         attribute_value: {
             type: String,
-            required: true,   
+            required: true
         },
     }],
     availability: {
@@ -41,7 +41,7 @@ const ItemSchema = mongoose.Schema({
         default: Date.now,
     },
     updated_at: {
-        type: Date,     
+        type: Date,
     },
     _storeId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -66,10 +66,10 @@ ItemSchema.pre('save', function (next)  {
 // update update_at during update (hehe)
 ItemSchema.pre('findOneAndUpdate', function(next) {
     const item = this;
-    item.update({}, {$set: {updated_at: new Date() }});
+    item.update({}, {$set: {updated_at: new Date()}});
     next();
 });
 
 const Items = mongoose.model('Item', ItemSchema);
 
-module.exports = {Items}
+module.exports = {Items};

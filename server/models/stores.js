@@ -81,6 +81,6 @@ StoresSchema.pre('save', function (next)  {
     next();
 });
 
-const Stores = mongoose.model('Stores', StoresSchema)
+const Stores = mongoose.model('Stores', StoresSchema);
 
-module.exports = { Stores };
+module.exports = {Stores};

@@ -14,9 +14,9 @@ router.get('/:storeId', (req, res) => {
     const storeId = req.params.storeId;
     if (!ObjectID.isValid(storeId)) {
         return res.status(404).send();
-    } 
+    }
     Stores.findById(storeId).then((store) => {
-        if(!store) {
+        if (!store) {
             return res.status(404).send();
         }
         res.send({store});
@@ -29,18 +29,18 @@ router.get('/:storeId', (req, res) => {
 // can view my store profile (private) (not)
 router.get('/mystore/view', authenticate, (req, res) => {
     const user_id = req.user._id;
-    if (req.account != 'business account') {
+    if (req.account !== 'business account') {
         return res.status().send({
-            message: "Unauthorized account."
+            message: 'Unauthorized account.'
         });
     }
-    Stores.findOne({_storeAdmin: user_id }).then((store) =>{
-        if(!store) {
+    Stores.findOne({_storeAdmin: user_id}).then((store) =>{
+        if (!store) {
             return res.status(404).send({
-                message: "Store does not exist", 
+                message: 'Store does not exist',
             });
         }
-        res.send({store})
+        res.send({store});
     }, (e) => {
         res.status(400).send(e);
     });
@@ -51,25 +51,25 @@ router.delete('/:storeId', authenticate, (req, res) => {
     const storeId = req.params.storeId;
     if (!ObjectID.isValid(storeId)) {
         return res.status(404).send({
-            message: "Invalid Store Id",
+            message: 'Invalid Store Id',
         });
     }
 
-    if (req.account != 'business account') {
+    if (req.account !== 'business account') {
         return res.status().send({
-            message: "Unauthorized account."
+            message: 'Unauthorized account.'
         });
     }
 
     Stores.findByIdAndRemove(storeId).then((store) => {
-        if(!store) {
+        if (!store) {
             return res.status(404).send({
-                message: "Store does not exist", 
+                message: 'Store does not exist',
             });
         }
         res.send({
             store,
-            message: "store has been deleted"
+            message: 'store has been deleted'
         });
     }, (e) => {
         res.status(400).send(e);
@@ -84,21 +84,21 @@ router.patch('/:storeId', authenticate, (req, res) => {
         return res.status(404).send();
     }
 
-    if (req.account != 'business account') {
+    if (req.account !== 'business account') {
         return res.status().send({
-            message: "Unauthorized account."
+            message: 'Unauthorized account.'
         });
     }
 
     Stores.findByIdAndUpdate(storeId, {$set: body}, {new: true}).then((store) => {
-        if(!store) {
+        if (!store) {
             return res.status(404).send({
-                message: "Store does not exist", 
+                message: 'Store does not exist',
             });
         }
         res.send({
             store,
-            message: "Store has been updated"
+            message: 'Store has been updated'
         });
     }, (e) => {
         res.status(400).send(e);
@@ -107,44 +107,43 @@ router.patch('/:storeId', authenticate, (req, res) => {
 
 // create a item (private)
 router.post('/:storeId/item/create', authenticate, (req, res) => {
-    
     const storeId = req.params.storeId;
     const storeAdmin = req.user._id;
-    const body = _.pick(req.body, ['item_name', 'item_price', 'item_description', 'item_category', 'item_subcategory', 'item_attributes'])
+    const body = _.pick(req.body, ['item_name', 'item_price', 'item_description', 'item_category', 'item_subcategory', 'item_attributes']);
 
     if (!ObjectID.isValid(storeId)) {
         return res.status(404).send();
     }
 
-    if (req.account != 'business account') {
+    if (req.account !== 'business account') {
         return res.status().send({
-            message: "Unauthorized account."
+            message: 'Unauthorized account.'
         });
     }
     Stores.findOne({_id: storeId}).then((store) => {
-        if(!store) {
+        if (!store) {
             return res.status(404).send({
                 message: 'Sorry. Store does not exist'
-            }); 
+            });
         }
 
         Items.findOne({item_name: body.item_name}).then((duplicate) => {
-            if(duplicate) { 
+            if (duplicate) {
                 return Promise.reject({
                     message: 'Sorry. Item already already exists.'
                 });
             }
         }).then(() => {
-            const item_body = Object.assign({}, body, { _storeId: storeId}, { _storeAdmin: storeAdmin})
+            const item_body = Object.assign({}, body, {_storeId: storeId}, {_storeAdmin: storeAdmin});
 
             const item = new Items(item_body);
             item.save().then((item) => {
                 res.send({
                     item,
-                    message: "you have succesfully created the item"
+                    message: 'you have succesfully created the item'
                 });
             });
-        });    
+        });
     }).catch((e) => {
         res.status(400).send(e);
     });
@@ -159,8 +158,8 @@ router.get('/:storeId/item/:itemId', (req, res) => {
         return res.status(404).send();
     }
 
-    Items.findOne({ _storeId: storeId, _id: itemId }).then((item) => {
-        if(!item) {
+    Items.findOne({_storeId: storeId, _id: itemId}).then((item) => {
+        if (!item) {
             return res.status(404).send({
                 message: 'Sorry Item does not exist',
             });
@@ -178,9 +177,9 @@ router.patch('/:storeId/item/:itemId', authenticate, (req, res) => {
     const storeAdmin = req.user._id;
     const body = _.pick(req.body, ['item_name', 'item_price', 'item_description', 'item_category', 'item_subcategory', 'item_attributes']);
 
-    if (req.account != 'business account') {
+    if (req.account !== 'business account') {
         return res.status(400).send({
-            message: "Unauthorized account."
+            message: 'Unauthorized account.'
         });
     }
 
@@ -189,19 +188,19 @@ router.patch('/:storeId/item/:itemId', authenticate, (req, res) => {
     }
 
     Items.findOneAndUpdate({
-        _storeId: storeId, 
-        _id: itemId, 
-        _storeAdmin: storeAdmin}, 
-        {$set: body}, 
+        _storeId: storeId,
+        _id: itemId,
+        _storeAdmin: storeAdmin},
+        {$set: body},
         {new: true}).then((item) => {
-            if(!item) {
+            if (!item) {
                 return res.status(404).send({
-                    message: "Item does not exist", 
+                    message: 'Item does not exist',
                 });
             }
             res.send({
                 item,
-                message: "Item has been updated"
+                message: 'Item has been updated'
             });
         }).catch((e) => {
             res.status(400).send(e);
@@ -214,9 +213,9 @@ router.delete('/:storeId/item/:itemId', authenticate, (req, res) => {
     const itemId = req.params.itemId;
     const storeAdmin = req.user._id;
 
-    if (req.account != 'business account') {
+    if (req.account !== 'business account') {
         return res.status(400).send({
-            message: "Unauthorized account."
+            message: 'Unauthorized account.'
         });
     }
 
@@ -225,18 +224,18 @@ router.delete('/:storeId/item/:itemId', authenticate, (req, res) => {
     }
 
     Items.findOneAndRemove({
-        _storeId: storeId, 
-        _id: itemId, 
+        _storeId: storeId,
+        _id: itemId,
         _storeAdmin: storeAdmin
     }).then((item) => {
-        if(!item) {
+        if (!item) {
             return res.status(404).send({
-                message: "Item does not exist", 
+                message: 'Item does not exist',
             });
         }
         res.send({
             item,
-            message: "Item has been deleted"
+            message: 'Item has been deleted'
         });
     }).catch((e) => {
         res.status(400).send(e);
@@ -251,9 +250,9 @@ router.get('/:storeId/items', (req, res) => {
     }
 
     Items.find({_storeId: storeId}).then((items) =>{
-        if(!items) {
+        if (!items) {
             return res.status(404).send({
-                message: "Items does not exist", 
+                message: 'Items does not exist',
             });
         }
         res.send(items);
@@ -272,33 +271,33 @@ router.post('/:storeId/service/create', authenticate, (req, res) => {
         return res.status(404).send();
     }
 
-    if (req.account != 'business account') {
+    if (req.account !== 'business account') {
         return res.status(400).send({
-            message: "Unauthorized account."
+            message: 'Unauthorized account.'
         });
     }
 
     Stores.findOne({_id: storeId}).then((store) => {
-        if(!store) {
+        if (!store) {
             return res.status(404).send({
                 message: 'Sorry. Store does not exist'
-            }); 
+            });
         }
 
         Service.findOne({service_name: body.service_name}).then((duplicate) => {
-            if(duplicate) {
+            if (duplicate) {
                 return Promise.reject({
                     message: 'Sorry. Service already already exists.'
                 });
             }
         }).then(() => {
-            const service_body = Object.assign({}, body, { _storeId: storeId}, { _storeAdmin: storeAdmin});
+            const service_body = Object.assign({}, body, {_storeId: storeId}, {_storeAdmin: storeAdmin});
 
             const service = new Service(service_body);
             service.save().then((service) => {
                 res.send({
                     service,
-                    message: "you have succesfully created the service"
+                    message: 'you have succesfully created the service'
                 });
             });
         }).catch((e) => {
@@ -316,8 +315,8 @@ router.get('/:storeId/service/:serviceId', (req, res) => {
         return res.status(404).send();
     }
 
-    Service.findOne({ _storeId: storeId, _id: serviceId }).then((service) => {
-        if(!service) {
+    Service.findOne({_storeId: storeId, _id: serviceId}).then((service) => {
+        if (!service) {
             return res.status(404).send({
                 message: 'Sorry. That Service does not exist',
             });
@@ -339,26 +338,26 @@ router.patch('/:storeId/service/:serviceId', authenticate, (req, res) => {
         return res.status(404).send();
     }
 
-    if (req.account != 'business account') {
+    if (req.account !== 'business account') {
         return res.status().send({
-            message: "Unauthorized account."
+            message: 'Unauthorized account.'
         });
     }
 
     Service.findOneAndUpdate({
-        _storeId: storeId, 
-        _id: serviceId, 
-        _storeAdmin: storeAdmin}, 
-        {$set: body}, 
+        _storeId: storeId,
+        _id: serviceId,
+        _storeAdmin: storeAdmin},
+        {$set: body},
         {new: true}).then((service) => {
-            if(!service) {
+            if (!service) {
                 return res.status(404).send({
-                    message: "Sorry. Service does not exist", 
+                    message: 'Sorry. Service does not exist',
                 });
             }
             res.send({
                 service,
-                message: "Service has been updated"
+                message: 'Service has been updated'
             });
         }).catch((e) => {
             res.status(400).send(e);
@@ -375,25 +374,25 @@ router.delete('/:storeId/service/:serviceId', authenticate, (req, res) => {
         return res.status(404).send();
     }
 
-    if (req.account != 'business account') {
+    if (req.account !== 'business account') {
         return res.status().send({
-            message: "Unauthorized account."
+            message: 'Unauthorized account.'
         });
     }
 
     Service.findOneAndRemove({
-        _storeId: storeId, 
-        _id: serviceId, 
+        _storeId: storeId,
+        _id: serviceId,
         _storeAdmin: storeAdmin
     }).then((service) => {
-        if(!service) {
+        if (!service) {
             return res.status(404).send({
-                message: "Service does not exist", 
+                message: 'Service does not exist',
             });
         }
         res.send({
             service,
-            message: "Service has been deleted"
+            message: 'Service has been deleted'
         });
     }).catch((e) => {
         res.status(400).send(e);
@@ -408,9 +407,9 @@ router.get('/:storeId/services', (req, res) => {
     }
 
     Service.find({_storeId: storeId}).then((services) =>{
-        if(!services) {
+        if (!services) {
             return res.status(404).send({
-                message: "Services does not exist", 
+                message: 'Services does not exist',
             });
         }
         res.send(services);
@@ -419,4 +418,4 @@ router.get('/:storeId/services', (req, res) => {
     });
 });
 
-module.exports = router
+module.exports = router;

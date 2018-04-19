@@ -59,7 +59,7 @@ const UserSchema = mongoose.Schema({
         default: Date.now,
     },
     updated_at: {
-        type: Date,     
+        type: Date,
     },
     last_login: {
         type: Date,
@@ -69,12 +69,11 @@ const UserSchema = mongoose.Schema({
     }
 });
 
-//restrict user json data returned 
+//restrict user json data returned
 UserSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject();
-    
-    return _.pick(userObject, ['first_name', 'last_name', 'username', 'email_address', 'account_type'])
+    return _.pick(userObject, ['first_name', 'last_name', 'username', 'email_address', 'account_type']);
 };
 
 
@@ -101,7 +100,7 @@ UserSchema.methods.removeToken = function (token) {
             tokens: {token}
         }
     });
-}
+};
 
 // finnd user using token
 UserSchema.statics.findByToken = function (token) {
@@ -126,7 +125,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
     const User = this;
 
     return User.findOne({email}).then((user) => {
-        if(!user) {
+        if (!user) {
             return Promise.reject();
         }
 
@@ -140,7 +139,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
             });
         });
     });
-}
+};
 
 // hash user password before save
 UserSchema.pre('save', function (next) {
@@ -159,8 +158,8 @@ UserSchema.pre('save', function (next) {
     } else {
         next();
     }
-})
+});
 
 const Users = mongoose.model('Users', UserSchema);
 
-module.exports = {Users}
+module.exports = {Users};

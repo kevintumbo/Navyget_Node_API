@@ -4,7 +4,7 @@ import {Users} from '../models/users';
 const authenticate = (req, res, next) => {
     const token = req.header('x-auth');
     Users.findByToken(token).then((user) => {
-        if(!user) {
+        if (!user) {
             return Promise.reject();
         }
 
@@ -18,4 +18,4 @@ const authenticate = (req, res, next) => {
     });
 };
 
-module.exports = {authenticate}
+module.exports = {authenticate};

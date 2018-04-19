@@ -4,7 +4,7 @@ const ServiceSchema = mongoose.Schema({
     service_name: {
         type: String,
         required: true,
-        trim: true, 
+        trim: true,
     },
     service_price: {
         type: Number,
@@ -30,7 +30,7 @@ const ServiceSchema = mongoose.Schema({
         },
         attribute_value: {
             type: String,
-            required: true,   
+            required: true,
         },
     }],
     created_at: {
@@ -38,7 +38,7 @@ const ServiceSchema = mongoose.Schema({
         default: Date.now,
     },
     updated_at: {
-        type: Date,     
+        type: Date,
     },
     _storeId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -61,10 +61,10 @@ ServiceSchema.pre('save', function (next)  {
 // update update_at during update (hehe)
 ServiceSchema.pre('findOneAndUpdate', function(next) {
     const service = this;
-    service.update({}, {$set: {updated_at: new Date() }});
+    service.update({}, {$set: {updated_at: new Date()}});
     next();
 });
 
 const Service = mongoose.model('Service', ServiceSchema);
 
-module.exports = { Service }
+module.exports = {Service};

@@ -9,7 +9,7 @@ import {Users} from './models/users';
 import {authenticate} from './middleware/authenticate';
 import authenticationRoutes from './routes/auth';
 import userProfileRoutes from './routes/profile';
-import storeProfileRoutes from './routes/store'
+import storeProfileRoutes from './routes/store';
 
 const _ = require('lodash');
 
